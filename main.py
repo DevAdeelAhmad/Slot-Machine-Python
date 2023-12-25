@@ -21,12 +21,18 @@ symbolValues = {
 }
 
 def checkWinnings(columns, lines, bet, values):
+    winnings = 0
+    winningLines = []
     for line in range(lines):
         symbol = columns[0][line]
         for column in columns:
             symbolToCheck = column[line]
             if symbol != symbolToCheck:
                 break
+        else:
+            winnings += values[symbol] * bet
+            winningLines.append(line + 1)    
+    return winnings, winningLines
 
 def getSlotMachineSpin(rows, cols, symbols):
     allSymbols = []
@@ -97,8 +103,7 @@ def getBet():
                 print("Please enter a number.")
     return amount
     
-def main():
-    balance = deposit()
+def spin(balance):
     lines = getNumberOfLines()
     while True:
         bet = getBet()
@@ -111,5 +116,21 @@ def main():
 
     slots = getSlotMachineSpin(ROWS, COLS, symbolCount)
     printSlotMachine(slots)
+    winnings, winningLines = checkWinnings(slots, lines, bet, symbolValues)
+    print(f"You Won ${winnings}.")
+    # Splat/Unpack Operator
+    print(f"You Won on lines: ", *winningLines)
+    return winnings - totalBet
+    
+def main():
+    balance = deposit()
+    while True:
+        print(f"Current Balance is ${balance}")
+        answer = input("Press enter to play (q to quit).")
+        if answer == "q":
+            break
+        balance += spin(balance)
+    
+    print(f"You left with ${balance}")
 
 main()
